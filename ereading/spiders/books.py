@@ -43,7 +43,7 @@ class BooksSpider(scrapy.Spider):
         series = self.get_value(response.xpath('//table/tr/td/a[contains(@href, "series")]/text()'))
         average_rating = self.get_value(response.xpath('//span[@itemprop="average"]/text()'))
         votes = self.get_value(response.xpath('//span[@itemprop="votes"]/text()'))
-        genre = self.get_value(response.xpath('//table/tr/td/a[@itemprop="category genre"]/text()'))
+        genre = response.xpath('//table/tr/td/a[@itemprop="category genre"]/text()').extract()
 
         yield BookItem(title=title, author=author, average_rating=average_rating, votes=votes, series=series,
                        genre=genre)
