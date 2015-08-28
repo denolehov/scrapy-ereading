@@ -14,6 +14,10 @@ BOT_NAME = 'ereading'
 SPIDER_MODULES = ['ereading.spiders']
 NEWSPIDER_MODULE = 'ereading.spiders'
 
+ITEM_PIPELINES = {
+    'ereading.pipelines.BookPipeline': 1,
+}
+
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = 'ereading (+http://www.yourdomain.com)'
