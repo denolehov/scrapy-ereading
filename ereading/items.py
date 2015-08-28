@@ -8,7 +8,11 @@
 import scrapy
 
 
-class EreadingItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class BookItem(scrapy.Item):
+    title = scrapy.Field()
+    author = scrapy.Field()
+    average_rating = scrapy.Field()
+    votes = scrapy.Field()
+    series = scrapy.Field()
+    genre = scrapy.Field()
+    # description = scrapy.Field()
