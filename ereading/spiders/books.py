@@ -13,6 +13,11 @@ class BooksSpider(scrapy.Spider):
     )
 
     def get_value(self, xpath):
+        """
+        Created to reformat:
+            ["Some Example"] -> "Some Example" (or "None" if no data in xpath)
+        :param xpath: raw xpath to extract data from
+        """
         result = xpath.extract()
         if len(result) == 1:
             return result[0]
@@ -22,22 +27,31 @@ class BooksSpider(scrapy.Spider):
             return "None"
 
     def parse(self, response):
-        self.logger.info('Parse starting for %s' % response.url)
-
+        """
+        At this point we go through alphabet and
+        yielding Requests to pages with list of authors
+        """
         for link in response.xpath('//div/nofollow/a/@href').extract():
             if link.startswith('/author'):
                 yield scrapy.Request(url=get_url(response, link), callback=self.parse_list_of_authors)
 
     def parse_list_of_authors(self, response):
+        """ Here we follow all the authors links """
         for link in response.xpath('//tr/td/a/@href').extract():
             if link.startswith('bookbyauthor'):
                 yield scrapy.Request(url=get_url(response, link), callback=self.parse_authors_page)
 
     def parse_authors_page(self, response):
+        """ Follow all the book-detail urls """
         for link in response.xpath('//*[@class="bookrecord"]/a/@href').extract():
             yield scrapy.Request(url=get_url(response, link), callback=self.parse_book)
 
     def parse_book(self, response):
+        """
+        Parse the title, author, series etc. of the book.
+        If we get no data from parse output, assign "None" to several field.
+        """
+        # TODO: Debug title (and possibly other fields (xpaths)) because it gives "None" too often
         title = self.get_value(response.xpath('//table/tr/td/a[contains(@href, "bookreader")]/text()'))
         author = self.get_value(response.xpath('//table/tr/td/a[contains(@href, "bookbyauthor")]/strong/text()'))
         series = self.get_value(response.xpath('//table/tr/td/a[contains(@href, "series")]/text()'))
